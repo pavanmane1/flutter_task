@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  bool isChecked = false; // State variable
+  bool isChecked = false;
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             isChecked = newValue!;
                           });
                         },
-                        activeColor: Colors.blue, // Checkbox color when checked
+                        activeColor: Colors.blue,
                       ),
                       const Text("Remember me"),
                     ],
@@ -125,7 +125,6 @@ class _LoginScreenState extends State<LoginScreen> {
       await authProvider.login(emailController.text, passwordController.text);
 
       if (authProvider.token != null) {
-        // Fetch country data if userData is available
         if (authProvider.userData != null) {
           await countryProvider.fetchCountries(
             authProvider.userData!.clientID,
@@ -144,16 +143,21 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
 
-        // Ensure the widget is still mounted before navigating
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');
         }
       }
     } catch (error) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login failed: $error")));
+        _showErrorSnackbar(context, error.toString());
       }
     }
+  }
+
+  void _showErrorSnackbar(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red, duration: const Duration(seconds: 3)));
   }
 }
 
@@ -170,6 +174,7 @@ class CustomTextInput extends StatefulWidget {
 
 class _CustomTextInputState extends State<CustomTextInput> {
   bool _isObscured = true;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -179,7 +184,7 @@ class _CustomTextInputState extends State<CustomTextInput> {
       decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10)),
       child: TextField(
         controller: widget.controller,
-        obscureText: widget.isPassword,
+        obscureText: widget.isPassword ? _isObscured : false,
         decoration: InputDecoration(
           border: InputBorder.none,
           hintText: widget.hintText,
