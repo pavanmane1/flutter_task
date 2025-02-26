@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
-  bool isChecked = false;
+  bool isChecked = false; // State variable
 
   @override
   Widget build(BuildContext context) {
@@ -59,7 +59,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             isChecked = newValue!;
                           });
                         },
-                        activeColor: Colors.blue,
+                        activeColor: Colors.blue, // Checkbox color when checked
                       ),
                       const Text("Remember me"),
                     ],
@@ -125,6 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
       await authProvider.login(emailController.text, passwordController.text);
 
       if (authProvider.token != null) {
+        // Fetch country data if userData is available
         if (authProvider.userData != null) {
           await countryProvider.fetchCountries(
             authProvider.userData!.clientID,
@@ -143,21 +144,16 @@ class _LoginScreenState extends State<LoginScreen> {
           );
         }
 
+        // Ensure the widget is still mounted before navigating
         if (mounted) {
           Navigator.pushReplacementNamed(context, '/home');
         }
       }
     } catch (error) {
       if (mounted) {
-        _showErrorSnackbar(context, error.toString());
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Login failed: $error")));
       }
     }
-  }
-
-  void _showErrorSnackbar(BuildContext context, String message) {
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text(message), backgroundColor: Colors.red, duration: const Duration(seconds: 3)));
   }
 }
 
